@@ -27,7 +27,9 @@ allprojects {
     }
 
     ext {
-        nanojsonVersion = "5df3e81e87b791d01f132f376e4b7d4a1780f346"
+        // When updating nanojson from FireMasterK's fork, take the last commit that does not use
+        // fastutil, since we don't want to add fastutil as a dependency of NewPipeExtractor.
+        nanojsonVersion = "7056f30ab24294a507cd2b2d56073181ca9bcc8b"
         spotbugsVersion = "4.7.3"
         junitVersion = "5.9.1"
         checkstyleVersion = "9.3" // do not use latest version (10.0) as it requires compile JDK 11
