@@ -15,6 +15,7 @@ import com.grack.nanojson.JsonArray;
 import com.grack.nanojson.JsonObject;
 import com.grack.nanojson.JsonWriter;
 
+import org.apache.commons.codec.binary.Base64;
 import org.schabi.newpipe.extractor.Image;
 import org.schabi.newpipe.extractor.Page;
 import org.schabi.newpipe.extractor.StreamingService;
@@ -27,12 +28,17 @@ import org.schabi.newpipe.extractor.localization.TimeAgoParser;
 import org.schabi.newpipe.extractor.playlist.PlaylistExtractor;
 import org.schabi.newpipe.extractor.playlist.PlaylistInfo;
 import org.schabi.newpipe.extractor.services.youtube.YoutubeParsingHelper;
+import org.schabi.newpipe.extractor.services.youtube.protos.playlist.PlaylistProtobufContinuation.ContinuationParams;
+import org.schabi.newpipe.extractor.services.youtube.protos.playlist.PlaylistProtobufContinuation.PlaylistContentFiltersParams;
+import org.schabi.newpipe.extractor.services.youtube.protos.playlist.PlaylistProtobufContinuation.PlaylistContinuation;
+import org.schabi.newpipe.extractor.services.youtube.protos.playlist.PlaylistProtobufContinuation.PlaylistContinuationProperties;
 import org.schabi.newpipe.extractor.stream.Description;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
 import org.schabi.newpipe.extractor.stream.StreamInfoItemsCollector;
 import org.schabi.newpipe.extractor.utils.Utils;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -40,6 +46,25 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class YoutubePlaylistExtractor extends PlaylistExtractor {
+
+    private static final String PLAYLIST_CONTINUATION_PROPERTIES_BASE64;
+
+    static {
+        try {
+            PLAYLIST_CONTINUATION_PROPERTIES_BASE64 = Utils.encodeUrlUtf8(
+                    Base64.encodeBase64String(
+                            PlaylistContinuationProperties.newBuilder()
+                                    .setRequestCount(0)
+                                    .setContentFilters(PlaylistContentFiltersParams.newBuilder()
+                                            .setHideUnavailableVideos(false)
+                                            .build())
+                                    .build()
+                                    .toByteArray()));
+        } catch (final UnsupportedEncodingException e) {
+            throw new RuntimeException("Couldn't encode playlist continuation properties", e);
+        }
+    }
+
     // Names of some objects in JSON response frequently used in this class
     private static final String PLAYLIST_VIDEO_RENDERER = "playlistVideoRenderer";
     private static final String PLAYLIST_VIDEO_LIST_RENDERER = "playlistVideoListRenderer";
@@ -50,6 +75,7 @@ public class YoutubePlaylistExtractor extends PlaylistExtractor {
     private static final String VIDEO_OWNER_RENDERER = "videoOwnerRenderer";
 
     private JsonObject browseResponse;
+    private JsonObject initialContinuationResponse;
 
     private JsonObject playlistInfo;
     private JsonObject uploaderInfo;
@@ -330,6 +356,17 @@ public class YoutubePlaylistExtractor extends PlaylistExtractor {
             if (videoPlaylistObject.has(PLAYLIST_VIDEO_LIST_RENDERER)) {
                 renderer = videoPlaylistObject.getObject(PLAYLIST_VIDEO_LIST_RENDERER);
             } else if (videoPlaylistObject.has(RICH_GRID_RENDERER)) {
+                // richGridRenderer objects are returned for playlists with a Shorts UI
+                // As of 09/12/2023 (American English date format), an initial continuation allows
+                // to get continuations of playlists with a Shorts UI and regular playlist video
+                // renderers
+                final InfoItemsPage<StreamInfoItem> continuationPage = getInitialContinuationPage();
+                if (!continuationPage.getItems().isEmpty()) {
+                    return continuationPage;
+                }
+
+                // If no items could be extracted from the continuation, fall back to the shorts UI
+                // renderers, no continuation is provided
                 renderer = videoPlaylistObject.getObject(RICH_GRID_RENDERER);
             } else {
                 return new InfoItemsPage<>(collector, null);
@@ -375,23 +412,64 @@ public class YoutubePlaylistExtractor extends PlaylistExtractor {
 
         final JsonObject lastElement = contents.getObject(contents.size() - 1);
         if (lastElement.has("continuationItemRenderer")) {
-            final String continuation = lastElement
-                    .getObject("continuationItemRenderer")
+            return getPageFromContinuation(lastElement.getObject("continuationItemRenderer")
                     .getObject("continuationEndpoint")
                     .getObject("continuationCommand")
-                    .getString("token");
-
-            final byte[] body = JsonWriter.string(prepareDesktopJsonBuilder(
-                            getExtractorLocalization(), getExtractorContentCountry())
-                            .value("continuation", continuation)
-                            .done())
-                    .getBytes(StandardCharsets.UTF_8);
-
-            return new Page(YOUTUBEI_V1_URL + "browse?key=" + getKey()
-                    + DISABLE_PRETTY_PRINT_PARAMETER, body);
+                    .getString("token"));
         } else {
             return null;
         }
+    }
+
+    @Nonnull
+    private Page getPageFromContinuation(@Nonnull final String continuation)
+            throws IOException, ExtractionException {
+        final byte[] body = JsonWriter.string(prepareDesktopJsonBuilder(
+                        getExtractorLocalization(), getExtractorContentCountry())
+                        .value("continuation", continuation)
+                        .done())
+                .getBytes(StandardCharsets.UTF_8);
+
+        return new Page(YOUTUBEI_V1_URL + "browse?key=" + getKey()
+                + DISABLE_PRETTY_PRINT_PARAMETER, body);
+    }
+
+    @Nonnull
+    private InfoItemsPage<StreamInfoItem> getInitialContinuationPage()
+            throws IOException, ExtractionException {
+        if (initialContinuationResponse == null) {
+            final String playlistId = getId();
+            final PlaylistContinuation playlistContinuation = PlaylistContinuation.newBuilder()
+                    .setParameters(ContinuationParams.newBuilder()
+                            .setBrowseId("VL" + playlistId)
+                            .setPlaylistId(playlistId)
+                            .setContinuationProperties(PLAYLIST_CONTINUATION_PROPERTIES_BASE64)
+                            .build())
+                    .build();
+
+            final String initialContinuation = Utils.encodeUrlUtf8(
+                    Base64.encodeBase64String(playlistContinuation.toByteArray()));
+            final Page page = getPageFromContinuation(initialContinuation);
+
+            try {
+                initialContinuationResponse = getJsonPostResponse("browse", page.getBody(),
+                        getExtractorLocalization());
+            } catch (final Exception e) {
+                return InfoItemsPage.emptyPage();
+            }
+        }
+
+        final StreamInfoItemsCollector collector = new StreamInfoItemsCollector(getServiceId());
+
+        final JsonArray initialItems = initialContinuationResponse
+                .getArray("onResponseReceivedActions")
+                .getObject(0)
+                .getObject("reloadContinuationItemsCommand")
+                .getArray("continuationItems");
+
+        collectStreamsFrom(collector, initialItems);
+
+        return new InfoItemsPage<>(collector, getNextPageFrom(initialItems));
     }
 
     private void collectStreamsFrom(@Nonnull final StreamInfoItemsCollector collector,
