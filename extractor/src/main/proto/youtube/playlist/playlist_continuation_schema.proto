@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package youtube.playlists;
+
+option java_outer_classname = "PlaylistProtobufContinuation";
+option java_multiple_files = false;
+option java_package = "org.schabi.newpipe.extractor.services.youtube.protos.playlist";
+
+message PlaylistContinuation {
+  ContinuationParams parameters = 80226972;
+}
+
+message ContinuationParams {
+  // The playlist ID as a browse one (it should be "VL" + playlist ID)
+  string browseId = 2;
+  // A PlaylistContinuationProperties message safe-encoded as a Base64 string
+  string continuationProperties = 3;
+  string playlistId = 35;
+}
+
+message PlaylistContinuationProperties {
+  // Optional field which should be used to avoid difference behavior with
+  // continuations returned by YouTube, starts at 0
+  int32 requestCount = 1;
+  // The playlist response starts at 0 if this field is omitted
+  // An optional string "PT:" with a PlaylistIndexContinuationParameter message
+  // safe-encoded in Base64 appended at the end
+  string playlistIndexParam = 15;
+  PlaylistContentFiltersParams contentFilters = 104;
+}
+
+message PlaylistIndexContinuationParam {
+  // The index cannot be 0 and should be a 100 multiplier (YouTube backends
+  // return that requests contain an invalid argument otherwise)
+  int32 index = 1;
+}
+
+// Content filters parameters for playlists.
+// Parameters hideUnavailableVideos and showOnlyVideos can be used at the same
+// time, but no videos would be returned in this case
+message PlaylistContentFiltersParams {
+  bool hideUnavailableVideos = 1;
+  bool showOnlyVideos = 2;
+  // Parameter works but doesn't return a Shorts UI as of 09/12/23 (American
+  // English date format)
+  bool showOnlyShorts = 3;
+}
