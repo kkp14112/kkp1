@@ -1,13 +1,13 @@
 // Created by Fynn Godau 2019, licensed GNU GPL version 3 or later
 
-package org.schabi.newpipe.extractor.services.bandcamp;
+package org.schabi.newpipe.extractor.services.bandcamp.search;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.schabi.newpipe.extractor.ServiceList.Bandcamp;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.schabi.newpipe.downloader.DownloaderTestImpl;
+import org.schabi.newpipe.downloader.DownloaderFactory;
 import org.schabi.newpipe.extractor.InfoItem;
 import org.schabi.newpipe.extractor.ListExtractor;
 import org.schabi.newpipe.extractor.NewPipe;
@@ -17,6 +17,7 @@ import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.playlist.PlaylistInfoItem;
 import org.schabi.newpipe.extractor.search.SearchExtractor;
 import org.schabi.newpipe.extractor.services.DefaultSearchExtractorTest;
+import org.schabi.newpipe.extractor.services.bandcamp.BandcampTestUtils;
 import org.schabi.newpipe.extractor.services.bandcamp.extractors.BandcampSearchExtractor;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
 
@@ -29,10 +30,11 @@ import javax.annotation.Nullable;
  */
 public class BandcampSearchExtractorTest {
 
-    @BeforeAll
-    public static void setUp() {
-        NewPipe.init(DownloaderTestImpl.getInstance());
+    private static final String RESOURCE_PATH = DownloaderFactory.RESOURCE_PATH + "services/bandcamp/extractor/search";
 
+    @BeforeAll
+    public static void setUp() throws IOException {
+        NewPipe.init(DownloaderFactory.getDownloader(RESOURCE_PATH));
     }
 
     /**
@@ -108,7 +110,7 @@ public class BandcampSearchExtractorTest {
 
         @BeforeAll
         public static void setUp() throws Exception {
-            NewPipe.init(DownloaderTestImpl.getInstance());
+            NewPipe.init(DownloaderFactory.getDownloader(RESOURCE_PATH + "default"));
             extractor = Bandcamp.getSearchExtractor(QUERY);
             extractor.fetchPage();
         }

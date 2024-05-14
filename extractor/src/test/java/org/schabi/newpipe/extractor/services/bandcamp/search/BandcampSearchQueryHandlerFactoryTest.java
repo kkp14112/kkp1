@@ -1,11 +1,9 @@
 // Created by Fynn Godau 2019, licensed GNU GPL version 3 or later
 
-package org.schabi.newpipe.extractor.services.bandcamp;
+package org.schabi.newpipe.extractor.services.bandcamp.search;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.schabi.newpipe.downloader.DownloaderTestImpl;
-import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.services.bandcamp.linkHandler.BandcampSearchQueryHandlerFactory;
 
@@ -18,8 +16,6 @@ public class BandcampSearchQueryHandlerFactoryTest {
 
     @BeforeAll
     public static void setUp() {
-        NewPipe.init(DownloaderTestImpl.getInstance());
-
         searchQuery = (BandcampSearchQueryHandlerFactory) Bandcamp
                 .getSearchQHFactory();
     }

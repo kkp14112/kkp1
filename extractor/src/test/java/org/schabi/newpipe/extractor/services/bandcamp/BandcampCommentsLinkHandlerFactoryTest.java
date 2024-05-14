@@ -4,10 +4,12 @@ package org.schabi.newpipe.extractor.services.bandcamp;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.schabi.newpipe.downloader.DownloaderTestImpl;
+import org.schabi.newpipe.downloader.DownloaderFactory;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.services.bandcamp.linkHandler.BandcampCommentsLinkHandlerFactory;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,12 +18,14 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class BandcampCommentsLinkHandlerFactoryTest {
 
+    private static final String RESOURCE_PATH = DownloaderFactory.RESOURCE_PATH + "services/bandcamp/extractor/linkHandler/comments";
     private static BandcampCommentsLinkHandlerFactory linkHandler;
 
     @BeforeAll
-    public static void setUp() {
+    public static void setUp() throws IOException {
+        // BandcampCommentsLinkHandlerFactory needs a Downloader to check if domain is supported
+        NewPipe.init(DownloaderFactory.getDownloader(RESOURCE_PATH));
         linkHandler = BandcampCommentsLinkHandlerFactory.getInstance();
-        NewPipe.init(DownloaderTestImpl.getInstance());
     }
 
     @Test

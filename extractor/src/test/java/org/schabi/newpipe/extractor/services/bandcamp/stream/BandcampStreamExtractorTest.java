@@ -1,15 +1,16 @@
 // Created by Fynn Godau 2019, licensed GNU GPL version 3 or later
 
-package org.schabi.newpipe.extractor.services.bandcamp;
+package org.schabi.newpipe.extractor.services.bandcamp.stream;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.schabi.newpipe.downloader.DownloaderTestImpl;
+import org.schabi.newpipe.downloader.DownloaderFactory;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.services.DefaultStreamExtractorTest;
+import org.schabi.newpipe.extractor.services.bandcamp.BandcampTestUtils;
 import org.schabi.newpipe.extractor.services.bandcamp.extractors.BandcampExtractorHelper;
 import org.schabi.newpipe.extractor.services.bandcamp.extractors.BandcampStreamExtractor;
 import org.schabi.newpipe.extractor.stream.StreamExtractor;
@@ -27,11 +28,12 @@ import static org.schabi.newpipe.extractor.ServiceList.Bandcamp;
  */
 public class BandcampStreamExtractorTest extends DefaultStreamExtractorTest {
 
+    private static final String RESOURCE_PATH = DownloaderFactory.RESOURCE_PATH + "services/bandcamp/extractor/stream/";
     private static BandcampStreamExtractor extractor;
 
     @BeforeAll
     public static void setUp() throws ExtractionException, IOException {
-        NewPipe.init(DownloaderTestImpl.getInstance());
+        NewPipe.init(DownloaderFactory.getDownloader(RESOURCE_PATH));
 
         extractor = (BandcampStreamExtractor) Bandcamp
                 .getStreamExtractor("https://teaganbear.bandcamp.com/track/just-for-the-halibut");

@@ -1,34 +1,30 @@
 package org.schabi.newpipe.extractor.services.bandcamp;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.schabi.newpipe.downloader.DownloaderTestImpl;
+import org.schabi.newpipe.downloader.DownloaderFactory;
 import org.schabi.newpipe.extractor.InfoItem;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.extractor.channel.tabs.ChannelTabExtractor;
 import org.schabi.newpipe.extractor.channel.tabs.ChannelTabs;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
-import org.schabi.newpipe.extractor.exceptions.ParsingException;
-import org.schabi.newpipe.extractor.services.BaseListExtractorTest;
 import org.schabi.newpipe.extractor.services.DefaultListExtractorTest;
 import org.schabi.newpipe.extractor.services.bandcamp.extractors.BandcampChannelTabExtractor;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.schabi.newpipe.extractor.ServiceList.Bandcamp;
-import static org.schabi.newpipe.extractor.ServiceList.PeerTube;
-import static org.schabi.newpipe.extractor.services.DefaultTests.defaultTestRelatedItems;
 
 class BandcampChannelTabExtractorTest {
+    private static final String RESOURCE_PATH = DownloaderFactory.RESOURCE_PATH + "services/bandcamp/extractor/channel/tab/";
 
     static class Tracks extends DefaultListExtractorTest<ChannelTabExtractor> {
+
         private static BandcampChannelTabExtractor extractor;
 
         @BeforeAll
         static void setUp() throws IOException, ExtractionException {
-            NewPipe.init(DownloaderTestImpl.getInstance());
+            NewPipe.init(DownloaderFactory.getDownloader(RESOURCE_PATH + "tracks"));
             extractor = (BandcampChannelTabExtractor) Bandcamp
                     .getChannelTabExtractorFromId("2464198920", ChannelTabs.TRACKS);
             extractor.fetchPage();
@@ -49,7 +45,7 @@ class BandcampChannelTabExtractorTest {
 
         @BeforeAll
         static void setUp() throws IOException, ExtractionException {
-            NewPipe.init(DownloaderTestImpl.getInstance());
+            NewPipe.init(DownloaderFactory.getDownloader(RESOURCE_PATH + "albums"));
             extractor = (BandcampChannelTabExtractor) Bandcamp
                     .getChannelTabExtractorFromId("2450875064", ChannelTabs.ALBUMS);
             extractor.fetchPage();

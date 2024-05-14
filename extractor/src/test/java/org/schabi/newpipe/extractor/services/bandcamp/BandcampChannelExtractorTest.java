@@ -4,7 +4,7 @@ package org.schabi.newpipe.extractor.services.bandcamp;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.schabi.newpipe.downloader.DownloaderTestImpl;
+import org.schabi.newpipe.downloader.DownloaderFactory;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.channel.ChannelExtractor;
 import org.schabi.newpipe.extractor.channel.tabs.ChannelTabs;
@@ -18,12 +18,12 @@ import static org.schabi.newpipe.extractor.ExtractorAsserts.assertTabsContain;
 import static org.schabi.newpipe.extractor.ServiceList.Bandcamp;
 
 public class BandcampChannelExtractorTest implements BaseChannelExtractorTest {
-
+    private static final String RESOURCE_PATH = DownloaderFactory.RESOURCE_PATH + "services/bandcamp/extractor/channel";
     private static ChannelExtractor extractor;
 
     @BeforeAll
     public static void setUp() throws Exception {
-        NewPipe.init(DownloaderTestImpl.getInstance());
+        NewPipe.init(DownloaderFactory.getDownloader(RESOURCE_PATH));
         extractor = Bandcamp.getChannelExtractor("https://toupie.bandcamp.com/releases");
         extractor.fetchPage();
     }

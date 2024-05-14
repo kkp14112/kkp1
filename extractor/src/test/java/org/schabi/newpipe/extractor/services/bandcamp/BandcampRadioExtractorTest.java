@@ -4,7 +4,7 @@ package org.schabi.newpipe.extractor.services.bandcamp;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.schabi.newpipe.downloader.DownloaderTestImpl;
+import org.schabi.newpipe.downloader.DownloaderFactory;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.services.BaseListExtractorTest;
@@ -23,11 +23,12 @@ import static org.schabi.newpipe.extractor.ServiceList.Bandcamp;
  */
 public class BandcampRadioExtractorTest implements BaseListExtractorTest {
 
+    private static final String RESOURCE_PATH = DownloaderFactory.RESOURCE_PATH + "services/bandcamp/extractor/radio";
     private static BandcampRadioExtractor extractor;
 
     @BeforeAll
     public static void setUp() throws ExtractionException, IOException {
-        NewPipe.init(DownloaderTestImpl.getInstance());
+        NewPipe.init(DownloaderFactory.getDownloader(RESOURCE_PATH));
         extractor = (BandcampRadioExtractor) Bandcamp
                 .getKioskList()
                 .getExtractorById("Radio", null);

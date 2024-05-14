@@ -1,8 +1,8 @@
-package org.schabi.newpipe.extractor.services.bandcamp;
+package org.schabi.newpipe.extractor.services.bandcamp.stream;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.schabi.newpipe.downloader.DownloaderTestImpl;
+import org.schabi.newpipe.downloader.DownloaderFactory;
 import org.schabi.newpipe.extractor.ExtractorAsserts;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.StreamingService;
@@ -11,6 +11,7 @@ import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.services.DefaultStreamExtractorTest;
 import org.schabi.newpipe.extractor.services.DefaultTests;
+import org.schabi.newpipe.extractor.services.bandcamp.BandcampTestUtils;
 import org.schabi.newpipe.extractor.services.bandcamp.extractors.BandcampRadioStreamExtractor;
 import org.schabi.newpipe.extractor.stream.StreamExtractor;
 import org.schabi.newpipe.extractor.stream.StreamType;
@@ -25,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.schabi.newpipe.extractor.ServiceList.Bandcamp;
 
 public class BandcampRadioStreamExtractorTest extends DefaultStreamExtractorTest {
+    private static final String RESOURCE_PATH = DownloaderFactory.RESOURCE_PATH + "services/bandcamp/extractor/stream/radio";
 
     private static StreamExtractor extractor;
 
@@ -32,7 +34,7 @@ public class BandcampRadioStreamExtractorTest extends DefaultStreamExtractorTest
 
     @BeforeAll
     public static void setUp() throws IOException, ExtractionException {
-        NewPipe.init(DownloaderTestImpl.getInstance());
+        NewPipe.init(DownloaderFactory.getDownloader(RESOURCE_PATH));
         extractor = Bandcamp.getStreamExtractor(URL);
         extractor.fetchPage();
     }

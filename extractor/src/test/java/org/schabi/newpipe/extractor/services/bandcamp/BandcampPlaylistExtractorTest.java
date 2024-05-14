@@ -5,7 +5,7 @@ package org.schabi.newpipe.extractor.services.bandcamp;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import org.schabi.newpipe.downloader.DownloaderTestImpl;
+import org.schabi.newpipe.downloader.DownloaderFactory;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.exceptions.ContentNotAvailableException;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
@@ -36,10 +36,11 @@ import static org.schabi.newpipe.extractor.ServiceList.Bandcamp;
  * Tests for {@link BandcampPlaylistExtractor}
  */
 public class BandcampPlaylistExtractorTest {
+    private static final String RESOURCE_PATH = DownloaderFactory.RESOURCE_PATH + "services/bandcamp/extractor/playlist/";
 
     @BeforeAll
-    public static void setUp() {
-        NewPipe.init(DownloaderTestImpl.getInstance());
+    public static void setUp() throws IOException {
+        NewPipe.init(DownloaderFactory.getDownloader(RESOURCE_PATH));
     }
 
     /**
@@ -110,7 +111,7 @@ public class BandcampPlaylistExtractorTest {
 
         @BeforeAll
         public static void setUp() throws ExtractionException, IOException {
-            NewPipe.init(DownloaderTestImpl.getInstance());
+            NewPipe.init(DownloaderFactory.getDownloader(RESOURCE_PATH + "coming-of-age"));
             extractor = Bandcamp.getPlaylistExtractor("https://macbenson.bandcamp.com/album/coming-of-age");
             extractor.fetchPage();
         }

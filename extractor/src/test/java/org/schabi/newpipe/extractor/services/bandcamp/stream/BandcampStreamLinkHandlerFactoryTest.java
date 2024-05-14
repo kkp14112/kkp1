@@ -1,13 +1,15 @@
 // Created by Fynn Godau 2019, licensed GNU GPL version 3 or later
 
-package org.schabi.newpipe.extractor.services.bandcamp;
+package org.schabi.newpipe.extractor.services.bandcamp.stream;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.schabi.newpipe.downloader.DownloaderTestImpl;
+import org.schabi.newpipe.downloader.DownloaderFactory;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.exceptions.ParsingException;
 import org.schabi.newpipe.extractor.services.bandcamp.linkHandler.BandcampStreamLinkHandlerFactory;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,12 +18,13 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class BandcampStreamLinkHandlerFactoryTest {
 
+    private static final String RESOURCE_PATH = DownloaderFactory.RESOURCE_PATH + "services/bandcamp/extractor/linkHandler/stream";
     private static BandcampStreamLinkHandlerFactory linkHandler;
 
     @BeforeAll
-    public static void setUp() {
+    public static void setUp() throws IOException {
+        NewPipe.init(DownloaderFactory.getDownloader(RESOURCE_PATH));
         linkHandler = BandcampStreamLinkHandlerFactory.getInstance();
-        NewPipe.init(DownloaderTestImpl.getInstance());
     }
 
     @Test
