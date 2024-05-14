@@ -1,0 +1,56 @@
+{
+  "request": {
+    "httpMethod": "GET",
+    "url": "https://toupie.bandcamp.com/releases",
+    "headers": {
+      "Accept-Language": [
+        "en-GB, en;q\u003d0.9"
+      ]
+    },
+    "localization": {
+      "languageCode": "en",
+      "countryCode": "GB"
+    }
+  },
+  "response": {
+    "responseCode": 403,
+    "responseMessage": "",
+    "responseHeaders": {
+      "accept-ranges": [
+        "bytes"
+      ],
+      "content-length": [
+        "425"
+      ],
+      "content-type": [
+        "text/html; charset\u003dutf-8"
+      ],
+      "date": [
+        "Tue, 14 May 2024 11:18:41 GMT"
+      ],
+      "retry-after": [
+        "0"
+      ],
+      "server": [
+        "Varnish"
+      ],
+      "via": [
+        "1.1 varnish"
+      ],
+      "x-cache": [
+        "MISS"
+      ],
+      "x-cache-hits": [
+        "0"
+      ],
+      "x-served-by": [
+        "cache-fra-eddf8230048-FRA"
+      ],
+      "x-timer": [
+        "S1715685521.003330,VS0,VE4"
+      ]
+    },
+    "responseBody": "\n\u003c?xml version\u003d\"1.0\" encoding\u003d\"utf-8\"?\u003e\n\u003c!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"\u003e\n\u003chtml\u003e\n  \u003chead\u003e\n    \u003ctitle\u003e403 Forbidden\u003c/title\u003e\n  \u003c/head\u003e\n  \u003cbody\u003e\n    \u003ch1\u003eError 403 Forbidden\u003c/h1\u003e\n    \u003cp\u003eForbidden\u003c/p\u003e\n    \u003ch3\u003eError 54113\u003c/h3\u003e\n    \u003cp\u003eDetails: cache-fra-eddf8230048-FRA 1715685521 3202733049\u003c/p\u003e\n    \u003chr\u003e\n    \u003cp\u003eVarnish cache server\u003c/p\u003e\n  \u003c/body\u003e\n\u003c/html\u003e\n",
+    "latestUrl": "https://toupie.bandcamp.com/releases"
+  }
+}
