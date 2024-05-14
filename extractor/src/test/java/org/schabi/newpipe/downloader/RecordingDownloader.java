@@ -47,7 +47,7 @@ class RecordingDownloader extends Downloader {
     private final String path;
 
     /**
-     * Creates the folder described by {@code stringPath} if it does not exists.
+     * Creates the folder described by {@code stringPath} if it does not exist.
      * Deletes existing files starting with {@link RecordingDownloader#FILE_NAME_PREFIX}.
      * @param stringPath Path to the folder where the json files will be saved to.
      */
